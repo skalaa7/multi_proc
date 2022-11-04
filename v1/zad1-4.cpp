@@ -18,6 +18,7 @@ int main (void){
 			
 		}
 	}*/
+	srand(prank+1);
 	for(int i=0;i<csize;i++)
 	{
 		load=10*prank+rand()%10;
@@ -25,7 +26,7 @@ int main (void){
 	}
 	for(int i=0;i<csize;i++)
 	{
-		MPI_Resc(&load,1,MPI_INT,i,0,MPI_COMM_WORLD);
+		MPI_Recv(message+i,1,MPI_INT,i,0,MPI_COMM_WORLD,MPI_STATUS_IGNORE);
 	}
 	
 	
