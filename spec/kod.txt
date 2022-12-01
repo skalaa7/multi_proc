@@ -1,0 +1,21 @@
+    float newRow[COLSIZE];
+    float pivotColVal[ROWSIZE];
+    const int pivotRow=0;
+    for(int i=0;i<COLSIZE;i++)
+    {
+        newRow[i]=wv[pivotRow][i]/pivot;
+    }
+
+    for(int j=1;j<ROWSIZE;j++)
+    {
+    	pivotColVal[j]=wv[j][pivotCol];
+    }
+
+    for(int j=1;j<ROWSIZE-1;j=j+2)
+    {  
+        for(int i=0;i<COLSIZE;i++)
+        {
+            wv[j][i]=wv[j][i]-newRow[i]*pivotColVal[j];
+            wv[j+1][i]=wv[j+1][i]-newRow[i]*pivotColVal[j+1];
+        }
+    }
