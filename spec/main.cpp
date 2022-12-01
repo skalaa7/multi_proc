@@ -6,6 +6,10 @@
 #define ROWSIZE (NUMOFSLACK+1)
 #define COLSIZE (NUMOFSLACK+NUMOFVAR+1)
 int count=0;
+double sfull=0;
+double spivot=0;
+double sdiv=0;
+double ds;
 double s;
 using namespace std;
 bool checkOptimality(float wv[ROWSIZE][COLSIZE])
@@ -120,16 +124,17 @@ void doPivoting(float wv[ROWSIZE][COLSIZE],int pivotRow,int pivotCol,float pivot
 {
     float newRow[COLSIZE];
     float pivotColVal[ROWSIZE];
+    ds=omp_get_wtime();
     for(int i=0;i<COLSIZE;i++)
         {
             newRow[i]=wv[pivotRow][i]/pivot;
         }
-
+	sdiv=sdiv+omp_get_wtime()-ds;
         for(int j=0;j<ROWSIZE;j++)
         {
             pivotColVal[j]=wv[j][pivotCol];
         }
-
+	ds=omp_get_wtime();
         for(int j=0;j<ROWSIZE;j++)
         {
             if(j==pivotRow)
@@ -147,6 +152,7 @@ void doPivoting(float wv[ROWSIZE][COLSIZE],int pivotRow,int pivotCol,float pivot
                 }
             }
         }
+        spivot=spivot+omp_get_wtime()-ds;
 }
 void solutions(float wv[ROWSIZE][COLSIZE])
 {
@@ -209,10 +215,10 @@ void simplexCalculate(float wv[ROWSIZE][COLSIZE])
         pivotRow=findPivotRow(wv,pivotCol);
 	//cout<<count<<",pivot="<<wv[pivotRow][pivotCol]<<endl;
         pivot=wv[pivotRow][pivotCol];
-	s=omp_get_wtime();
+	//s=omp_get_wtime();
     	
         doPivoting(wv,pivotRow,pivotCol,pivot);
-        s=omp_get_wtime()-s;
+       // s=omp_get_wtime()-s;
         //print(wv);
 
     }
@@ -241,10 +247,10 @@ int main()
 
 
     	//print(wv);
-    	//s=omp_get_wtime();
+    	s=omp_get_wtime();
     	simplexCalculate(wv);
-    	//s=omp_get_wtime()-s;
-    	printf("Time is %lfs\n",s*count);
+    	sfull=omp_get_wtime()-s;
+    	printf("Time is %lfs,%lf,%lf\n",sfull,spivot,sdiv);
 
     return 0;
 }

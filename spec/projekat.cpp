@@ -5,7 +5,11 @@
 #define NUMOFSLACK 1000
 #define ROWSIZE (NUMOFSLACK+1)
 #define COLSIZE (NUMOFSLACK+NUMOFVAR+1)
-
+//double sfull=0;
+//double spivot=0;
+//double sdiv=0;
+//double ds;
+double s;
 int count=0;
 using namespace std;
 
@@ -121,17 +125,20 @@ void doPivoting(float wv[ROWSIZE][COLSIZE],int pivotRow,int pivotCol,float pivot
 {
     float newRow[COLSIZE];
     float pivotColVal[ROWSIZE];
-    //#pragma omp parallel for num_threads(tc)
+    //ds=omp_get_wtime();
+    #pragma omp parallel for num_threads(tc) 
     for(int i=0;i<COLSIZE;i++)
     {
          newRow[i]=wv[pivotRow][i]/pivot;
     }
-
+    //sdiv=sdiv+omp_get_wtime()-ds;
+    //#pragma omp parallel for num_threads(tc) schedule(runtime)
     for(int j=0;j<ROWSIZE;j++)
     {
          pivotColVal[j]=wv[j][pivotCol];
     }
-    #pragma omp parallel for num_threads(tc)
+    //ds=omp_get_wtime();
+    #pragma omp parallel for num_threads(tc) schedule(runtime)
     for(int j=0;j<ROWSIZE;j++)
     {
          if(j==pivotRow)
@@ -149,6 +156,7 @@ void doPivoting(float wv[ROWSIZE][COLSIZE],int pivotRow,int pivotCol,float pivot
                }
         }
     }
+    //spivot=spivot+omp_get_wtime()-ds;
 }
 void solutions(float wv[ROWSIZE][COLSIZE])
 {
@@ -241,10 +249,10 @@ int main(int argc, char * argv[])
 
 
     	//print(wv);
-    	double s=omp_get_wtime();
+    	s=omp_get_wtime();
     	simplexCalculate(wv,tc);
     	s=omp_get_wtime()-s;
-    	printf("Time is %lfs\n",s);
+    	printf("Time is %lfs,%d\n",s,tc);
 
     return 0;
 }
